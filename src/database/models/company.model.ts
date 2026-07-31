@@ -17,13 +17,9 @@ import { Industry } from './industry.model';
 import { SaasUser } from './saas/saas-user.model';
 import { User } from './user.model';
 import { CompanyMeta } from './company-meta.model';
+import { LocationType } from './location-type.model';
+import { Location } from './location.model';
 
-// NOTE: simplified from the source project. The original Company model also
-// declared `@HasMany(() => LocationType) location_types` and
-// `@HasMany(() => Location) locations`, which pulled in the location-type
-// and location feature modules — excluded per the auth-only port. Those
-// associations were dropped; the underlying `locations`/`location_types`
-// tables (if ever added back) are unrelated to authentication.
 @Table({
   tableName: 'companies',
   paranoid: true,
@@ -150,6 +146,12 @@ export class Company extends Model {
 
   @HasMany(() => CompanyMeta)
   declare meta: CompanyMeta[];
+
+  @HasMany(() => LocationType)
+  declare location_types: LocationType[];
+
+  @HasMany(() => Location)
+  declare locations: Location[];
 
   @HasMany(() => User)
   declare users: User[];

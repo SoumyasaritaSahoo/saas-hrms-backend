@@ -11,21 +11,21 @@ import {
   ForeignKey,
   BelongsTo,
   HasMany,
+  BelongsToMany,
 } from 'sequelize-typescript';
 
 import { Company } from './company.model';
+import { Department } from './department.model';
+import { Designation } from './designation.model';
+import { Role } from './role.model';
+import { UserRole } from './user-role.model';
+import { UserCompanyLocation } from './user-company-location.model';
+import { LeaveBalance } from './leave-balance.model';
+import { AttendanceShift } from './attendance-shift.model';
+import { UserAddress } from './user-address.model';
+import { UserDocument } from './user-document.model';
+import { UserBankAccount } from './user-bank-account.model';
 
-// NOTE: simplified from the source project. The original User model also
-// declared associations to Department, Designation, Role (via UserRole),
-// UserCompanyLocation, LeaveBalance, AttendanceShift, UserAddress,
-// UserDocument and UserBankAccount — all belonging to feature modules
-// explicitly excluded from this auth-only port (department, designation,
-// role, location, leave, attendance, plus the address/bank/document
-// profile extras). Those `@BelongsTo`/`@HasMany`/`@ForeignKey` decorators
-// were dropped so those models never need to be imported; the plain
-// `department_id` / `designation_id` / `shift_id` UUID columns are kept
-// (nullable, no FK constraint) so the column shape still matches the
-// source `users` table if those modules are added back later.
 @Table({
   tableName: 'users',
   paranoid: true,
@@ -108,10 +108,11 @@ export class User extends Model {
   @Column(DataType.DECIMAL(12, 2))
   declare base_salary: number | null;
 
-  // Plain columns, no FK — see NOTE above.
+  @ForeignKey(() => Department)
   @Column(DataType.UUID)
   declare department_id: string | null;
 
+  @ForeignKey(() => Designation)
   @Column(DataType.UUID)
   declare designation_id: string | null;
 
@@ -119,6 +120,7 @@ export class User extends Model {
   @Column(DataType.UUID)
   declare manager_id: string | null;
 
+  @ForeignKey(() => AttendanceShift)
   @Column(DataType.UUID)
   declare shift_id: string | null;
 
@@ -190,9 +192,36 @@ export class User extends Model {
   @BelongsTo(() => Company)
   declare company: Company;
 
+  @BelongsTo(() => Department)
+  declare department: Department;
+
+  @BelongsTo(() => Designation)
+  declare designation: Designation;
+
   @BelongsTo(() => User, 'manager_id')
   declare manager: User;
 
+  @BelongsTo(() => AttendanceShift)
+  declare shift: AttendanceShift;
+
   @HasMany(() => User, 'manager_id')
   declare team_members: User[];
+
+  @BelongsToMany(() => Role, () => UserRole)
+  declare roles: Role[];
+
+  @HasMany(() => UserCompanyLocation)
+  declare user_company_locations: UserCompanyLocation[];
+
+  @HasMany(() => LeaveBalance)
+  declare leave_balances: LeaveBalance[];
+
+  @HasMany(() => UserAddress)
+  declare addresses: UserAddress[];
+
+  @HasMany(() => UserDocument)
+  declare documents: UserDocument[];
+
+  @HasMany(() => UserBankAccount)
+  declare bank_accounts: UserBankAccount[];
 }
