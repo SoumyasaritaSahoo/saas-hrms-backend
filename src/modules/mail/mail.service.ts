@@ -43,6 +43,30 @@ export class MailService {
     });
   }
 
+  async sendVerificationEmail(to: string, name: string, verifyUrl: string) {
+    const html = baseEmailTemplate({
+      title: 'Verify Your Email',
+      content: `
+        <p>Hello ${name},</p>
+        <p>Thanks for signing up! Please confirm your email address to activate your account.</p>
+        <p>Click the button below to verify your email. This link expires in 24 hours.</p>
+        <p>If you didn't create this account, please ignore this email.</p>
+      `,
+      buttonText: 'Verify Email',
+      buttonUrl: verifyUrl,
+    });
+
+    await this.transporter.sendMail({
+      from: {
+        address: process.env.MAIL_FROM,
+        name: 'SaaS HRMS',
+      },
+      to: [to],
+      subject: 'Verify Your Email - SaaS HRMS',
+      html,
+    });
+  }
+
   async sendTestMail(to: string) {
     const html = baseEmailTemplate({
       title: 'Welcome to SaaS HRMS',

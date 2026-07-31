@@ -169,6 +169,9 @@ export class User extends Model {
   @Column(DataType.DATE)
   declare last_login_at: Date | null;
 
+  @Column(DataType.DATE)
+  declare email_verified_at: Date | null;
+
   @CreatedAt
   declare created_at: Date;
 

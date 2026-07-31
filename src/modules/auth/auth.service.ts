@@ -78,7 +78,12 @@ export class AuthService {
     });
 
     if (existingUser) {
-      throw new ConflictException('An account with this email already exists');
+      throw new ConflictException({
+        statusCode: 409,
+        error: 'Conflict',
+        message: 'An account with this email already exists',
+        error_code: 'ACCOUNT_ALREADY_EXISTS',
+      });
     }
 
     const identifier = this.generateAlphanumeric(12);
@@ -109,7 +114,82 @@ export class AuthService {
 
     const profile = await this.userService.getUserProfile(user.id);
 
-    return { token, user: profile };
+    const verifyToken = crypto.randomBytes(32).toString('hex');
+    const verifyTokenHash = crypto
+      .createHash('sha256')
+      .update(verifyToken)
+      .digest('hex');
+
+    await this.emailVerificationModel.create({
+      user_id: user.id,
+      type: 'email_verify',
+      hashed_token: verifyTokenHash,
+      expires_at: new Date(Date.now() + 24 * 60 * 60 * 1000),
+    });
+
+    const verifyUrl = `${process.env.FRONTEND_URL}/en/verify-email?token=${verifyToken}`;
+
+    return { token, user: profile, verifyUrl, verifyToken };
+  }
+
+  async verifyEmail(token: string) {
+    const tokenHash = crypto.createHash('sha256').update(token).digest('hex');
+
+    const verification = await this.emailVerificationModel.findOne({
+      where: {
+        hashed_token: tokenHash,
+        type: 'email_verify',
+        verified_at: null,
+      },
+    });
+
+    if (!verification) {
+      throw new BadRequestException('Invalid or expired verification link');
+    }
+
+    if (new Date() > new Date(verification.expires_at)) {
+      throw new BadRequestException('Verification link has expired');
+    }
+
+    const user = await this.userModel.findByPk(verification.user_id);
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    user.email_verified_at = new Date();
+    await user.save();
+
+    verification.verified_at = new Date();
+    await verification.save();
+
+    return user;
+  }
+
+  async resendVerificationEmail(email: string) {
+    const user = await this.userModel.findOne({ where: { email } });
+
+    if (!user) {
+      throw new NotFoundException('User not found with this email');
+    }
+
+    if (user.email_verified_at) {
+      return { user, verifyUrl: null, alreadyVerified: true as const };
+    }
+
+    const token = crypto.randomBytes(32).toString('hex');
+    const tokenHash = crypto.createHash('sha256').update(token).digest('hex');
+
+    await this.emailVerificationModel.create({
+      user_id: user.id,
+      type: 'email_verify',
+      hashed_token: tokenHash,
+      expires_at: new Date(Date.now() + 24 * 60 * 60 * 1000),
+    });
+
+    const verifyUrl = `${process.env.FRONTEND_URL}/en/verify-email?token=${token}`;
+
+    return { user, verifyUrl, token, alreadyVerified: false as const };
   }
 
   async validateMainUser(email: string, password: string) {
@@ -130,6 +210,7 @@ export class AuthService {
       email: user.email,
       first_name: user.first_name,
       last_name: user.last_name,
+      email_verified_at: user.email_verified_at,
       type: 'user',
     };
   }

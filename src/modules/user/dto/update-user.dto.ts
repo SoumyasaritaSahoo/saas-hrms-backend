@@ -1,7 +1,8 @@
 import {
-  IsOptional,
   IsString,
-  MinLength,
+  IsOptional,
+  IsEmail,
+  IsUUID,
   IsDateString,
   IsEnum,
   IsNumber,
@@ -9,11 +10,10 @@ import {
 } from 'class-validator';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 
-export class UpdateUserProfileDto {
+export class UpdateUserDto {
   @ApiPropertyOptional({ example: 'John' })
   @IsOptional()
   @IsString()
-  @MinLength(1)
   first_name?: string;
 
   @ApiPropertyOptional()
@@ -24,13 +24,52 @@ export class UpdateUserProfileDto {
   @ApiPropertyOptional({ example: 'Doe' })
   @IsOptional()
   @IsString()
-  @MinLength(1)
   last_name?: string;
 
-  @ApiPropertyOptional({ example: '+1234567890' })
+  @ApiPropertyOptional({ example: 'john@admin.com' })
+  @IsOptional()
+  @IsEmail()
+  email?: string;
+
+  @ApiPropertyOptional({ example: '7846378678' })
   @IsOptional()
   @IsString()
   phone?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsUUID()
+  department_id?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsUUID()
+  designation_id?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsUUID()
+  manager_id?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsDateString()
+  joining_date?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsUUID()
+  role_id?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsUUID()
+  location_id?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsUUID()
+  shift_id?: string;
 
   @ApiPropertyOptional({ example: '1990-05-15' })
   @IsOptional()
@@ -71,6 +110,35 @@ export class UpdateUserProfileDto {
   @IsOptional()
   @IsString()
   emergency_contact_relation?: string;
+
+  @ApiPropertyOptional({ example: 50000 })
+  @IsOptional()
+  @IsNumber()
+  base_salary?: number;
+
+  @ApiPropertyOptional({
+    enum: ['full_time', 'part_time', 'contract', 'internship', 'temporary'],
+  })
+  @IsOptional()
+  @IsEnum(['full_time', 'part_time', 'contract', 'internship', 'temporary'])
+  employment_type?: string;
+
+  @ApiPropertyOptional({
+    enum: ['probation', 'confirmed', 'notice_period', 'resigned', 'terminated'],
+  })
+  @IsOptional()
+  @IsEnum(['probation', 'confirmed', 'notice_period', 'resigned', 'terminated'])
+  employment_status?: string;
+
+  @ApiPropertyOptional({ enum: ['on_site', 'remote', 'hybrid'] })
+  @IsOptional()
+  @IsEnum(['on_site', 'remote', 'hybrid'])
+  work_mode?: string;
+
+  @ApiPropertyOptional({ example: true })
+  @IsOptional()
+  @IsBoolean()
+  status?: boolean;
 
   @ApiPropertyOptional()
   @IsOptional()

@@ -4,6 +4,8 @@ import { LoginDto } from './dto/login.dto';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { RegisterDto } from './dto/register.dto';
+import { VerifyEmailDto } from './dto/verify-email.dto';
+import { ResendVerificationDto } from './dto/resend-verification.dto';
 import { successResponse } from '../../common/helpers/helper';
 import {
   getAdminRoute,
@@ -48,9 +50,53 @@ export class AuthController {
       });
     }
 
+    await this.mailService.sendVerificationEmail(
+      result.user.email,
+      result.user.full_name,
+      result.verifyUrl,
+    );
+
+    const isDev = process.env.NODE_ENV === 'development';
+
     return successResponse({
       message: 'Account created successfully',
-      data: result,
+      data: {
+        token: result.token,
+        user: result.user,
+        ...(isDev ? { verifyUrl: result.verifyUrl, verifyToken: result.verifyToken } : {}),
+      },
+    });
+  }
+
+  @Post(getAppRoute('verify_email'))
+  async verifyEmail(@Body() dto: VerifyEmailDto) {
+    await this.authService.verifyEmail(dto.token);
+
+    return successResponse({
+      message: 'Email verified successfully',
+    });
+  }
+
+  @Post(getAppRoute('resend_verification'))
+  async resendVerification(@Body() dto: ResendVerificationDto) {
+    const { user, verifyUrl, alreadyVerified } =
+      await this.authService.resendVerificationEmail(dto.email);
+
+    if (!alreadyVerified && verifyUrl) {
+      await this.mailService.sendVerificationEmail(
+        user.email,
+        user.full_name,
+        verifyUrl,
+      );
+    }
+
+    const isDev = process.env.NODE_ENV === 'development';
+
+    return successResponse({
+      message: alreadyVerified
+        ? 'This email is already verified'
+        : 'Verification link sent to your email',
+      data: isDev && !alreadyVerified ? { verifyUrl } : undefined,
     });
   }
 

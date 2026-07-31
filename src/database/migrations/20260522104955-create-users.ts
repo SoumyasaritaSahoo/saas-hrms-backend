@@ -181,6 +181,11 @@ export default {
         allowNull: true,
       },
 
+      email_verified_at: {
+        type: DataTypes.DATE,
+        allowNull: true,
+      },
+
       created_at: {
         type: DataTypes.DATE,
         allowNull: false,
