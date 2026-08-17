@@ -1,7 +1,11 @@
-// Trimmed from the source project: only routes actually used by the
-// auth / user / company modules ported into this scaffold are kept.
-// (Routes for leave, attendance, holidays, roles, locations, etc. were
-// dropped along with the feature modules that served them.)
+// Trimmed from the source project: routes actually used by the auth /
+// user / company modules ported into this scaffold, plus every route the
+// Employee-management port needs (employee CRUD/profile/documents,
+// department, designation, location-type, location, role, permission,
+// attendance-shift, audit-log). Still dropped: saas-users/saas-roles
+// admin-console routes, holiday/leave-request/leave-type/leave-balance/
+// subscription/dashboard/company-logo/create-company routes — none of
+// those belong to Employee management or the modules that back it.
 export const ADMIN_ROUTE_PREFIX = 'admin';
 export const APP_ROUTE_PREFIX = 'app';
 
@@ -22,9 +26,61 @@ export const ROUTES = {
     forgotPassword: `${APP_ROUTE_PREFIX}/forgot-password`,
     resetPassword: `${APP_ROUTE_PREFIX}/reset-password`,
     profile: `${APP_ROUTE_PREFIX}/profile`,
+    profile_documents: `${APP_ROUTE_PREFIX}/profile/documents`,
+    profile_document_detail: `${APP_ROUTE_PREFIX}/profile/documents/:documentId`,
+    profile_picture: `${APP_ROUTE_PREFIX}/profile/picture`,
     register: `${APP_ROUTE_PREFIX}/register`,
+    verify_email: `${APP_ROUTE_PREFIX}/verify-email`,
+    resend_verification: `${APP_ROUTE_PREFIX}/resend-verification`,
     update_company: `${APP_ROUTE_PREFIX}/company/update/:id`,
     company_detail: `${APP_ROUTE_PREFIX}/company/:id`,
+    roles: `${APP_ROUTE_PREFIX}/roles`,
+    role_detail: `${APP_ROUTE_PREFIX}/roles/:id`,
+    permissions: `${APP_ROUTE_PREFIX}/permissions`,
+    create_role: `${APP_ROUTE_PREFIX}/roles/create`,
+    update_role: `${APP_ROUTE_PREFIX}/roles/update/:id`,
+    remove_role: `${APP_ROUTE_PREFIX}/roles/remove/:id`,
+    get_all_roles: `${APP_ROUTE_PREFIX}/all-roles`,
+    location_types: `${APP_ROUTE_PREFIX}/location-types`,
+    location_type_detail: `${APP_ROUTE_PREFIX}/location-types/:id`,
+    create_location_type: `${APP_ROUTE_PREFIX}/location-types/create`,
+    update_location_type: `${APP_ROUTE_PREFIX}/location-types/update/:id`,
+    remove_location_type: `${APP_ROUTE_PREFIX}/location-types/remove/:id`,
+    get_all_location_types: `${APP_ROUTE_PREFIX}/all-location-types`,
+    locations: `${APP_ROUTE_PREFIX}/locations`,
+    location_detail: `${APP_ROUTE_PREFIX}/locations/:id`,
+    create_location: `${APP_ROUTE_PREFIX}/locations/create`,
+    update_location: `${APP_ROUTE_PREFIX}/locations/update/:id`,
+    remove_location: `${APP_ROUTE_PREFIX}/locations/remove/:id`,
+    get_all_locations: `${APP_ROUTE_PREFIX}/all-locations`,
+    departments: `${APP_ROUTE_PREFIX}/departments`,
+    department_detail: `${APP_ROUTE_PREFIX}/departments/:id`,
+    create_department: `${APP_ROUTE_PREFIX}/departments/create`,
+    update_department: `${APP_ROUTE_PREFIX}/departments/update/:id`,
+    remove_department: `${APP_ROUTE_PREFIX}/departments/remove/:id`,
+    get_all_departments: `${APP_ROUTE_PREFIX}/all-departments`,
+    designations: `${APP_ROUTE_PREFIX}/designations`,
+    designation_detail: `${APP_ROUTE_PREFIX}/designations/:id`,
+    create_designation: `${APP_ROUTE_PREFIX}/designations/create`,
+    update_designation: `${APP_ROUTE_PREFIX}/designations/update/:id`,
+    remove_designation: `${APP_ROUTE_PREFIX}/designations/remove/:id`,
+    get_all_designations: `${APP_ROUTE_PREFIX}/all-designations`,
+    users: `${APP_ROUTE_PREFIX}/users`,
+    user_detail: `${APP_ROUTE_PREFIX}/users/:id`,
+    create_user: `${APP_ROUTE_PREFIX}/users/create`,
+    update_user: `${APP_ROUTE_PREFIX}/users/update/:id`,
+    remove_user: `${APP_ROUTE_PREFIX}/users/remove/:id`,
+    get_all_users: `${APP_ROUTE_PREFIX}/all-users`,
+    upload_user_documents: `${APP_ROUTE_PREFIX}/users/:id/documents`,
+    remove_user_document: `${APP_ROUTE_PREFIX}/users/:id/documents/:documentId`,
+    attendance_shifts: `${APP_ROUTE_PREFIX}/attendance-shifts`,
+    attendance_shift_detail: `${APP_ROUTE_PREFIX}/attendance-shifts/:id`,
+    create_attendance_shift: `${APP_ROUTE_PREFIX}/attendance-shifts/create`,
+    update_attendance_shift: `${APP_ROUTE_PREFIX}/attendance-shifts/update/:id`,
+    toggle_attendance_shift: `${APP_ROUTE_PREFIX}/attendance-shifts/toggle/:id`,
+    remove_attendance_shift: `${APP_ROUTE_PREFIX}/attendance-shifts/remove/:id`,
+    get_all_attendance_shifts: `${APP_ROUTE_PREFIX}/all-attendance-shifts`,
+    audit_logs: `${APP_ROUTE_PREFIX}/audit-logs`,
   },
 
   common: {
